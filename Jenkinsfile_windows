@@ -19,7 +19,7 @@ pipeline {
     stage ('build the docker image'){
       steps{
         script {
-         bat "docker build -t maroof49/test_prod:%{BUILD_NUMBER} ." 
+         bat "docker build -t maroof49/test_prod:%{env.BUILD_NUMBER} ." 
         }
         }
       }
