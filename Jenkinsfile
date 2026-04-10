@@ -16,7 +16,7 @@ pipeline {
       }
     }
 
-    stage ('build the docker image){
+    stage ('build the docker image'){
       steps{
         script {
       docker build -t maroof49/test_prod:${BUILD_NUMBER}  
@@ -24,7 +24,7 @@ pipeline {
         }
       }
 
-    stage ('push the docker image to docker hub){
+    stage ('push the docker image to dockerhub'){
       steps{
         script{
           // Login to Docker Hub
