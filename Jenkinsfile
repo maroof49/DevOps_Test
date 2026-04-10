@@ -1,6 +1,11 @@
 pipeline {
   agent any
-  maven 'mvn'
+
+  environment {
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials') 
+        DOCKER_IMAGE = "maroof49/test_prod"
+        DOCKER_TAG = ${BUILD_NUMBER}
+    }
 
   stages{
     stage ('build the code'){
@@ -22,7 +27,10 @@ pipeline {
     stage ('push the docker image to docker hub){
       steps{
         script{
-          
+          // Login to Docker Hub
+          sh "echo ${DOCKER_HUB_CREDENTIALS_PSW} | docker login -u ${DOCKER_HUB_CREDENTIALS_USR} --password-stdin"
+          // Push image
+          sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
         }
       }
     }
