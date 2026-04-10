@@ -4,7 +4,7 @@ pipeline {
   environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials') 
         DOCKER_IMAGE = "maroof49/test_prod"
-        DOCKER_TAG = "%{env.BUILD_NUMBER}"
+        DOCKER_TAG = "lates"
     }
 
   stages{
@@ -19,7 +19,7 @@ pipeline {
     stage ('build the docker image'){
       steps{
         script {
-         bat "docker build -t maroof49/test_prod:%{env.BUILD_NUMBER} ." 
+         bat "docker build -t maroof49/test_prod:%{DOCKER_TAG} ." 
         }
         }
       }
