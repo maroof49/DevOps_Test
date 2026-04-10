@@ -4,14 +4,14 @@ pipeline {
   environment {
         DOCKER_HUB_CREDENTIALS = credentials('dockerhub-credentials') 
         DOCKER_IMAGE = "maroof49/test_prod"
-        DOCKER_TAG = "${BUILD_NUMBER}"
+        DOCKER_TAG = "%{env.BUILD_NUMBER}"
     }
 
   stages{
     stage ('build the code'){
       steps {
         script{
-          sh 'javac HelloWorld.java'
+          bat 'javac HelloWorld.java'
         }
       }
     }
@@ -19,7 +19,7 @@ pipeline {
     stage ('build the docker image'){
       steps{
         script {
-         sh "docker build -t maroof49/test_prod:${BUILD_NUMBER} ." 
+         bat "docker build -t maroof49/test_prod:%{BUILD_NUMBER} ." 
         }
         }
       }
@@ -28,7 +28,7 @@ pipeline {
       steps{
         script{
           // Login to Docker Hub
-          sh "echo ${DOCKER_HUB_CREDENTIALS_PSW} | docker login -u ${DOCKER_HUB_CREDENTIALS_USR} --password-stdin"
+          bat "echo %{DOCKER_HUB_CREDENTIALS_PSW} | docker login -u %{DOCKER_HUB_CREDENTIALS_USR} --password-stdin"
           // Push image
           sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
         }
