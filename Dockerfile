@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk-slim
+FROM eclipse-temurin:25
 WORKDIR /app 
 COPY HelloWorld.java .
 RUN javac HelloWorld.java
