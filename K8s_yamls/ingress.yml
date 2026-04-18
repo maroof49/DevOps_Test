@@ -15,6 +15,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: my-app-service   # Must match your Service name
+                name: mini-project-service   # Must match your Service name
                 port:
                   number: 80           # Must match your Service port
