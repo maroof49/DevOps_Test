@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: myapp.example.com   # Replace with your domain
+    - host: devopsbymaroof.shop # Replace with your domain
       http:
         paths:
           - path: /
