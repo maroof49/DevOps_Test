@@ -36,5 +36,20 @@ pipeline {
         }
       }
     }
+
+      stage('Deploy to Kubernetes') {
+          steps {
+              script {
+                  withCredentials([file(credentialsId: KUBECONFIG_CREDENTIALS, variable: 'KUBECONFIG_FILE')]) {
+                      sh '''
+                      export KUBECONFIG=$KUBECONFIG_FILE
+                      kubectl set image deployment/your-deployment-name \
+                        your-container-name=${DOCKER_IMAGE}:${BUILD_NUMBER} --record
+                      kubectl rollout status deployment/your-deployment-name
+                      '''
+                  }
+              }
+          }
+      }
   }
 }
