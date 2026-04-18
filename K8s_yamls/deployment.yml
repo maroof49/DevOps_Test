@@ -5,7 +5,7 @@ metadata:
   labels:
     app: java
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchlabels:
       labels:
@@ -17,7 +17,7 @@ spec:
     spec:
       conatainer:
         - name: java-app
-          image: maroof49/test_prod:7
+          image: maroof49/test_prod:8
           ports:
           - conatinerPort: 80
         
