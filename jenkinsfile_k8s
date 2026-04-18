@@ -1,0 +1,74 @@
+pipeline {
+    agent any
+
+    environment {
+        // Replace with your Docker Hub credentials ID stored in Jenkins
+        DOCKERHUB_CREDENTIALS = 'dockerhub-creds'
+        DOCKER_IMAGE = 'your-dockerhub-username/your-private-repo'
+        KUBECONFIG_CREDENTIALS = 'kubeconfig-creds' // Jenkins secret for kubeconfig
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-org/your-repo.git'
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            environment {
+                scannerHome = tool 'SonarQubeScanner'
+            }
+            steps {
+                withSonarQubeEnv('SonarQubeServer') {
+                    sh "${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=your-project-key \
+                        -Dsonar.sources=src \
+                        -Dsonar.java.binaries=target"
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} ."
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS,
+                                                     usernameVariable: 'DOCKER_USER',
+                                                     passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                        sh "docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    withCredentials([file(credentialsId: KUBECONFIG_CREDENTIALS, variable: 'KUBECONFIG_FILE')]) {
+                        sh '''
+                        export KUBECONFIG=$KUBECONFIG_FILE
+                        kubectl set image deployment/your-deployment-name \
+                          your-container-name=${DOCKER_IMAGE}:${BUILD_NUMBER} --record
+                        kubectl rollout status deployment/your-deployment-name
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}
